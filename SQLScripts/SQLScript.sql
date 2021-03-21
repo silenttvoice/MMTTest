@@ -137,3 +137,37 @@ GO
 	END
 GO
 	PRINT '[dbo].[spGetProductsByCategoryId] successfully created.'
+
+------------
+
+	IF EXISTS 
+(
+	SELECT *
+	FROM sys.objects
+	WHERE object_id = OBJECT_ID(N'[dbo].[spCategoryIdExists]')
+)
+	BEGIN
+		DROP PROCEDURE [dbo].[spCategoryIdExists];
+		PRINT '[dbo].[spCategoryIdExists] successfully dropped.'
+	END
+GO
+	CREATE PROCEDURE [dbo].[spCategoryIdExists] 
+		@CategoryId UNIQUEIDENTIFIER
+	AS
+	BEGIN
+		SET NOCOUNT ON;
+
+		SELECT CASE WHEN EXISTS(
+			SELECT Id
+			FROM [dbo].[Categories]
+			WHERE Id = @CategoryId
+				AND IsDeleted = 0
+		)
+		THEN CAST(1 as BIT)
+		ELSE CAST(0 as BIT)
+		END
+	END
+GO
+	PRINT '[dbo].[spCategoryIdExists] successfully created.'
+
+------------
